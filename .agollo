@@ -1,0 +1,1 @@
+{"application":{"app.name":"rpcx-usercenter","mysql.db":"rpcx-usercenter","mysql.host":"127.0.0.1:3306","mysql.password":"123456@pzm","mysql.user":"root","rpcx.consul.addr":"47.56.227.160:8500","rpcx.port":"38080"}}

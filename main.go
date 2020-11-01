@@ -39,7 +39,7 @@ func main() {
 
 	addRegistryPlugin(s, "rpcx", addr, consulAddr)
 	
-	s.RegisterName("Login", new(auth_service.Login), "")
+	s.RegisterName("usercenter", new(auth_service.Login), "")
 
 	err := s.Serve("tcp", addr)
 	if err != nil {

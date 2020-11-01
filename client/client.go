@@ -2,15 +2,15 @@ package main
 
 import (
 	"context"
+	"github.com/goodliving/usercenter/service/auth_service"
 	"github.com/smallnest/rpcx/client"
 	"log"
-	"rpcx-usercenter/service/auth_service"
 	"time"
 )
 
 func main()  {
-	d := client.NewConsulDiscovery("/rpcx", "Login", []string{"47.56.227.160:8500"}, nil)
-	xClient := client.NewXClient("Login", client.Failtry, client.RandomSelect, d, client.DefaultOption)
+	d := client.NewConsulDiscovery("/rpcx", "usercenter", []string{"47.56.227.160:8500"}, nil)
+	xClient := client.NewXClient("usercenter", client.Failtry, client.RandomSelect, d, client.DefaultOption)
 
 	defer xClient.Close()
 

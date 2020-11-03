@@ -5,7 +5,7 @@ import (
 	"github.com/goodliving/usercenter/apollo"
 	"github.com/goodliving/usercenter/config"
 	"github.com/goodliving/usercenter/model"
-	"github.com/goodliving/usercenter/service/auth_service"
+	"github.com/goodliving/usercenter/service"
 	"github.com/goodliving/usercenter/util/ip"
 	"github.com/rcrowley/go-metrics"
 	"github.com/shima-park/agollo"
@@ -38,14 +38,13 @@ func main() {
 	s := server.NewServer()
 
 	addRegistryPlugin(s, "rpcx", addr, consulAddr)
-	
-	s.RegisterName("usercenter", new(auth_service.Login), "")
+
+	_ = s.RegisterName("usercenter", new(service.LoginService), "")
 
 	err := s.Serve("tcp", addr)
 	if err != nil {
 		panic(err)
 	}
-
 }
 
 func addRegistryPlugin(s *server.Server, basePath, addr, consulAddr string) {

@@ -2,10 +2,9 @@ package service
 
 import (
 	"context"
-	"encoding/json"
-	"fmt"
 	"github.com/goodliving/usercenter/model"
-	"github.com/smallnest/rpcx/share"
+	"github.com/goodliving/usercenter/pkg/logging"
+	"github.com/goodliving/usercenter/pkg/util"
 )
 
 type LoginService int
@@ -16,31 +15,37 @@ type LoginArgs struct {
 }
 
 type LoginReply struct {
-	Code int         `json:"code"`
 	TraceID string `json:"trace_id"`
-	Msg  string      `json:"msg"`
 	Data interface{} `json:"data"`
 	Success bool `json:"success"`
+	Msg  string      `json:"msg"`
 }
 
 func (l LoginService) Login(ctx context.Context, args *LoginArgs, reply *LoginReply) error {
-	fmt.Println("登录信息： ", args)
-	reqMeta := ctx.Value(share.ReqMetaDataKey).(map[string]string)
-	resMeta := ctx.Value(share.ResMetaDataKey).(map[string]string)
+	logging.ZapLogger.Infow("登录信息", "请求参数", args)
+	//reqMeta := ctx.Value(share.ReqMetaDataKey).(map[string]string)
+	//resMeta := ctx.Value(share.ResMetaDataKey).(map[string]string)
 
-	fmt.Printf("received meta: %+v\n", reqMeta["traceId"])
-	resMeta["echo"] = "from server"
+	reply.TraceID = "traceId"
 
 	user, err := model.CheckAuth(args.Username, args.Password)
-
-	u, _ := json.Marshal(user)
 	if err != nil {
 		reply.Data = nil
 		reply.Success = false
+		reply.Msg = "登录失败，请检查"
 		return nil
 	}
 
-	reply.Data = string(u)
+	token, expireTime, _ := util.GenerateToken(args.Username, args.Password)
+
+	data := make(map[string]interface{})
+	data["user_id"] = user.ID
+	data["display_name"] = user.DisplayName
+	data["token"] = token
+	data["expire_time"] = expireTime
+
+	reply.Data = data
 	reply.Success = true
+	reply.Msg = "登陆成功"
 	return nil
 }

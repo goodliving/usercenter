@@ -6,6 +6,7 @@ import (
 	"github.com/goodliving/usercenter/pkg/logging"
 	"github.com/goodliving/usercenter/service"
 	"github.com/smallnest/rpcx/server"
+	"github.com/smallnest/rpcx/serverplugin"
 )
 
 func init() {
@@ -23,7 +24,11 @@ func main() {
 	rpcxInfo := functions.GetRpcxInfo()
 	logging.Setup("demo")
 
+	traceP := &serverplugin.OpenTracingPlugin{}
+
 	s := server.NewServer()
+	s.Plugins.Add(traceP)
+
 	functions.AddConsulRegistryPlugin(s, rpcxInfo.RpcxBasePath, rpcxInfo.ServiceAddr, rpcxInfo.ConsulAddr)
 	_ = s.RegisterName("usercenter", new(service.LoginService), "")
 

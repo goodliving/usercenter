@@ -1,14 +1,10 @@
 package main
 
 import (
-	"fmt"
-	"github.com/goodliving/usercenter/apollo"
-	"github.com/goodliving/usercenter/config"
+	"github.com/goodliving/functions"
 	"github.com/goodliving/usercenter/model"
 	"github.com/goodliving/usercenter/service"
-	"github.com/goodliving/usercenter/util/ip"
 	"github.com/rcrowley/go-metrics"
-	"github.com/shima-park/agollo"
 	"github.com/smallnest/rpcx/server"
 	"github.com/smallnest/rpcx/serverplugin"
 	"log"
@@ -16,32 +12,24 @@ import (
 )
 
 func init() {
-	apollo.Setup()
+	functions.SetupApollo()
 }
 
 func main() {
 
-	host, ipErr := ip.ExternalIP()
-	if ipErr != nil {
-		log.Fatal(ipErr)
-	}
-	addr := fmt.Sprintf("%s:%s", host, agollo.Get("rpcx.port"))
+	rpcxAddr := functions.GetRpcxAddr()
 
-	fmt.Println("addr: ", addr)
-
-	consulAddr := agollo.Get("rpcx.consul.addr")
-
-	mysqlInfo := config.GetMysqlInfo()
+	mysqlInfo := functions.GetMysqlInfo()
 	mysqlInfo.Host = "rm-wz9y8z9i6j34gicr5mo.mysql.rds.aliyuncs.com:3306"
 	model.Setup(mysqlInfo.User, mysqlInfo.Password, mysqlInfo.Host, mysqlInfo. DbName)
 
 	s := server.NewServer()
 
-	addRegistryPlugin(s, "rpcx", addr, consulAddr)
+	addRegistryPlugin(s, "rpcx", rpcxAddr.ServiceAddr, rpcxAddr.ConsulAddr)
 
 	_ = s.RegisterName("usercenter", new(service.LoginService), "")
 
-	err := s.Serve("tcp", addr)
+	err := s.Serve("tcp", rpcxAddr.ServiceAddr)
 	if err != nil {
 		panic(err)
 	}

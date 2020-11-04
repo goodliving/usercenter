@@ -12,7 +12,7 @@ import (
 )
 
 func main()  {
-	d := client.NewConsulDiscovery("/rpcx", "usercenter", []string{"47.56.227.160:8500"}, nil)
+	d := client.NewConsulDiscovery("rpcx", "usercenter", []string{"47.56.227.160:8500"}, nil)
 	xClient := client.NewXClient("usercenter", client.Failtry, client.RandomSelect, d, client.DefaultOption)
 
 	defer xClient.Close()

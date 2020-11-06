@@ -14,14 +14,15 @@ type LoginArgs struct {
 	Password string
 }
 
-type LoginReply struct {
+type Reply struct {
 	TraceID string `json:"trace_id"`
 	Data interface{} `json:"data"`
 	Success bool `json:"success"`
 	Msg  string      `json:"msg"`
 }
 
-func (l LoginService) Login(ctx context.Context, args *LoginArgs, reply *LoginReply) error {
+// Login验证用户密码是否正确，同时生成token
+func (l LoginService) Login(ctx context.Context, args *LoginArgs, reply *Reply) error {
 	logging.ZapLogger.Infow("登录信息", "请求参数", args)
 	//reqMeta := ctx.Value(share.ReqMetaDataKey).(map[string]string)
 	//resMeta := ctx.Value(share.ResMetaDataKey).(map[string]string)

@@ -2,7 +2,6 @@ package main
 
 import (
 	"context"
-	"encoding/json"
 	"fmt"
 	"github.com/goodliving/usercenter/service"
 	"github.com/smallnest/rpcx/client"
@@ -19,15 +18,15 @@ func main()  {
 
 	for {
 		//reply := &example.Reply{}
-		args := &service.LoginArgs{
+		loginArgs := &service.LoginArgs{
 			Username: "pzm",
 			Password: "123456",
 		}
-		reply := &service.LoginReply{}
+		reply := &service.Reply{}
 
 		ctx := context.WithValue(context.Background(), share.ReqMetaDataKey, map[string]string{"traceId": "123123"})
 		ctx = context.WithValue(ctx, share.ResMetaDataKey, make(map[string]string))
-		err := xClient.Call(ctx, "Login", args, reply)
+		err := xClient.Call(ctx, "Login", loginArgs, reply)
 
 		if err != nil {
 			log.Printf("failed to call: %v\n", err)
@@ -35,10 +34,15 @@ func main()  {
 			continue
 		}
 
-		b, _ := json.Marshal(reply)
+		//tokenArgs := &service.TokenArgs{Token: "123123123"}
+		//
+		//tokenErr := xClient.Call(ctx, "RefreshToken", tokenArgs, reply)
+		//if tokenErr != nil {
+		//	log.Printf("failed to call: %v\n", tokenErr)
+		//	time.Sleep(5 * time.Second)
+		//	continue
+		//}
 
-
-		log.Println("结果: ", string(b))
 		fmt.Println("resMeta: ", ctx.Value(share.ResMetaDataKey))
 		time.Sleep(5 * time.Second)
 	}

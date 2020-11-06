@@ -31,7 +31,7 @@ func main() {
 
 	functions.AddConsulRegistryPlugin(s, rpcxInfo.RpcxBasePath, rpcxInfo.ServiceAddr, rpcxInfo.ConsulAddr)
 	_ = s.RegisterName("usercenter", new(service.LoginService), "")
-
+	//_ = s.RegisterName("usercenter2", new(service.TokenService), "")
 	err := s.Serve("tcp", rpcxInfo.ServiceAddr)
 	if err != nil {
 		panic(err)
